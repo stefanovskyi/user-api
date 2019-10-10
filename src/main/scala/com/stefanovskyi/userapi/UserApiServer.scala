@@ -13,7 +13,7 @@ object UserApiServer {
   def stream[F[_]: ConcurrentEffect](implicit T: Timer[F], C: ContextShift[F]): Stream[F, Nothing] = {
     for {
       client <- BlazeClientBuilder[F](global).stream
-      userAlg = User.impl[F]
+      userAlg = UserService.impl[F]
 
       httpApp = (
         UserApiRoutes.userRoutes[F](userAlg)
