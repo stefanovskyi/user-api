@@ -10,6 +10,7 @@ object UserApiRoutes {
   def userRoutes[F[_]: Sync](H: UserService[F]): HttpRoutes[F] = {
     val dsl = new Http4sDsl[F]{}
     import dsl._
+
     HttpRoutes.of[F] {
       case GET -> Root / "user" / name =>
 
@@ -38,5 +39,21 @@ object UserApiRoutes {
           resp <- Ok(greeting)
         } yield resp
     }
+
+    HttpRoutes.of[F] {
+         case GET -> Root / "user" => Ok("Get All users")
+       }
+
+    HttpRoutes.of[F] {
+         case GET -> Root / "user" / id => Ok(s"Get user by $id")
+       }
+
+    HttpRoutes.of[F] {
+         case POST -> Root / "user" => Ok("Create new user")
+       }
+
+    HttpRoutes.of[F] {
+         case DELETE -> Root / "user" / id => Ok(s"Delete user by id: $id")
+       }
   }
 }
