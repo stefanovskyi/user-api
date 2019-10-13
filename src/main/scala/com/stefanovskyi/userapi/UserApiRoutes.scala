@@ -13,15 +13,11 @@ object UserApiRoutes {
     import dsl._
 
     HttpRoutes.of[F] {
-
       case GET -> Root / "users" :? SortingParamMatcher(sort) =>
         Ok(s"Get all users sorted $sort")
 
       case GET -> Root / "users" =>
         Ok("Get all users")
-
-      case GET -> Root / "users" / id =>
-        Ok(s"Get user by $id")
 
       case POST -> Root / "users" =>
         Created("Create new user")
