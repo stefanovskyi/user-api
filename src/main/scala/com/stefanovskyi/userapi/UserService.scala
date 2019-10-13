@@ -2,32 +2,37 @@ package com.stefanovskyi.userapi
 
 import cats.Applicative
 import cats.implicits._
-import io.circe.{Encoder, Json}
+import com.stefanovskyi.userapi.UserService.User
+import io.circe.literal._
+import io.circe.{Encoder}
 import org.http4s.EntityEncoder
 import org.http4s.circe._
 
 trait UserService[F[_]]{
-  def hello(n: UserService.Name): F[UserService.Greeting]
+  def getUser: F[User]
 }
 
 object UserService {
   implicit def apply[F[_]](implicit ev: UserService[F]): UserService[F] = ev
 
-  final case class Name(name: String) extends AnyVal
-  final case class Greeting(greeting: String) extends AnyVal
+  case class User(name: String, age: Int, email: String)
 
-  object Greeting {
-    implicit val greetingEncoder: Encoder[Greeting] = new Encoder[Greeting] {
-      final def apply(a: Greeting): Json = Json.obj(
-        ("message", Json.fromString(a.greeting)),
-      )
-    }
-    implicit def greetingEntityEncoder[F[_]: Applicative]: EntityEncoder[F, Greeting] =
-      jsonEncoderOf[F, Greeting]
+  object User {
+    implicit val userEncoder: Encoder[User] =
+      Encoder.instance { user: User =>
+        json"""{
+              "name": ${user.name},
+              "age": ${user.age},
+              "email": ${user.email}
+              }"""
+      }
+
+    implicit def userEntityEncoder[F[_] : Applicative]: EntityEncoder[F, User] =
+      jsonEncoderOf[F, User]
   }
 
   def impl[F[_]: Applicative]: UserService[F] = new UserService[F]{
-    def hello(n: UserService.Name): F[UserService.Greeting] =
-        Greeting("Hello, " + n.name).pure[F]
+    def getUser: F[User] =
+        User("tom", 21, "tom21@gmail.com").pure[F]
   }
 }

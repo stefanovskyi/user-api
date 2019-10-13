@@ -11,13 +11,12 @@ object UserApiRoutes {
   def userRoutes[F[_]: Sync](H: UserService[F]): HttpRoutes[F] = {
     val dsl = new Http4sDsl[F]{}
     import dsl._
-
     HttpRoutes.of[F] {
       case GET -> Root / "users" :? SortingParamMatcher(sort) =>
         Ok(s"Get all users sorted $sort")
 
       case GET -> Root / "users" =>
-        Ok("Get all users")
+        Ok(H.getUser)
 
       case POST -> Root / "users" =>
         Created("Create new user")
