@@ -1,6 +1,6 @@
 package com.stefanovskyi.userapi
 
-import cats.effect.Sync
+import cats.effect.{IO, Sync}
 import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
 import org.http4s.dsl.impl.QueryParamDecoderMatcher
@@ -21,12 +21,15 @@ object UserApiRoutes {
 
       case POST -> Root / "users" =>
         Created("Create new user")
+//        Conflict(s"User with $name already exist")
 
       case PUT -> Root / "users" =>
         Accepted("User has been edited")
+//        BadRequest("There is no such user")
 
       case DELETE -> Root / "users" / id =>
-        Ok(s"Delete user by id: $id")
+        NoContent()
+//        BadRequest(s"Delete user by id: $id")
     }
   }
 }
